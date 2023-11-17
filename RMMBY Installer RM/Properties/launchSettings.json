@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RMMBY Installer RM (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "RMMBY Installer RM (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
