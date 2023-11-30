@@ -52,22 +52,33 @@
                     </DataTemplate>
                 </Frame.Resources>
 
-                <ListView x:Name="ModListView" SelectionMode="Multiple" ItemTemplate="{StaticResource ContactListViewTemplate}">
-                    <ListView.HeaderTemplate>
-                        <DataTemplate>
-                            <Grid Padding="6" Margin="51,0,0,0" Background="{ThemeResource SystemBaseLowColor}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="275"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Title" Style="{ThemeResource CaptionTextBlockStyle}"/>
-                                <TextBlock Grid.Column="1" Text="Author" Style="{ThemeResource CaptionTextBlockStyle}"/>
-                                <TextBlock Grid.Column="2" Text="Version" Style="{ThemeResource CaptionTextBlockStyle}"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.HeaderTemplate>
-                </ListView>
+                <Border>
+                    <!--<Border.Background>
+                        <ImageBrush x:Name="BackgroundImage" ImageSource="https://images.gamebanana.com/img/banners/games/64676c210d911.jpg" AlignmentX="Right" AlignmentY="Bottom" Stretch="None" Opacity="0.1"/>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Offset="0.0" Color="Yellow" />
+                            <GradientStop Offset="0.25" Color="Red" />
+                            <GradientStop Offset="0.75" Color="Blue" />
+                            <GradientStop Offset="1.0" Color="LimeGreen" />
+                        </LinearGradientBrush>
+                    </Border.Background>-->
+                    <ListView x:Name="ModListView" SelectionMode="Multiple" ItemTemplate="{StaticResource ContactListViewTemplate}">
+                        <ListView.HeaderTemplate>
+                            <DataTemplate>
+                                <Grid Padding="6" Margin="51,0,0,0" Background="{ThemeResource SystemBaseLowColor}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="275"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Title" Style="{ThemeResource CaptionTextBlockStyle}"/>
+                                    <TextBlock Grid.Column="1" Text="Author" Style="{ThemeResource CaptionTextBlockStyle}"/>
+                                    <TextBlock Grid.Column="2" Text="Version" Style="{ThemeResource CaptionTextBlockStyle}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.HeaderTemplate>
+                    </ListView>
+                </Border>
 
                 <!-- <Border BorderThickness="2" BorderBrush="Maroon" Background="#FFFFFFFF">
                     <TextBlock x:Name="TestText" Text="Text inside a border" FontSize="18" Foreground="Black" TextWrapping="Wrap" />
@@ -75,8 +86,8 @@
             </Frame>
             <Grid Grid.Row="1">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Content="Save" Click="Save" Width="200" Margin="0,8,8,8" />
-                    <Button Content="Reset" Click="Reset" Width="200" />
+                    <Button x:Name="SaveButton" Content="Save" Click="Save" Width="200" Margin="0,8,8,8" />
+                    <Button x:Name="ResetButton" Content="Reset" Click="Reset" Width="200" />
                 </StackPanel>
             </Grid>
         </Grid>

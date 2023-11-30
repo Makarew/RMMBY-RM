@@ -22,10 +22,26 @@ namespace RMMBY_Installer_RM
         public static DisplayMod[] GetGameMods(string schema, string category)
         {
             List<DisplayMod> displayMods = new List<DisplayMod>();
-            displayMods.Add(new DisplayMod("Hatsune Miku Sora", "Makarew", "1.0.0"));
-            displayMods.Add(new DisplayMod("Kiara Fubuki", "MGbrad", "1.0.0"));
-            displayMods.Add(new DisplayMod("Yoshino Himekawa", "Makarew", "1.0.0"));
-            displayMods.Add(new DisplayMod("Mono Peko", "StickmanVT", "1.0.0"));
+            //displayMods.Add(new DisplayMod("Hatsune Miku Sora", "Makarew", "1.0.0"));
+            //displayMods.Add(new DisplayMod("Kiara Fubuki", "MGbrad", "1.0.0"));
+            //displayMods.Add(new DisplayMod("Yoshino Himekawa", "Makarew", "1.0.0"));
+            //displayMods.Add(new DisplayMod("Mono Peko", "StickmanVT", "1.0.0"));
+
+            GameData.modCount = 0;
+
+            if (GameData.currentGame.gameSchema == schema)
+            {
+                foreach(Metadata mod in GameData.currentGame.installedMods)
+                {
+                    if (mod.Type == category)
+                    {
+                        displayMods.Add(new DisplayMod(mod.Title, mod.Author, mod.Version));
+
+                        GameData.modCount++;
+                    }
+                }
+            }
+
             return displayMods.ToArray();
         }
     }

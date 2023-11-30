@@ -10,5 +10,7 @@ namespace RMMBY_Installer_RM
     {
         // Stores All Supported Games
         public static GetGameList.Game currentGame;
+        public static string currentCategory;
+        public static int modCount;
     }
 }

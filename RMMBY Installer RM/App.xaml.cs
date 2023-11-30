@@ -45,6 +45,14 @@ namespace RMMBY_Installer_RM
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            foreach (string line in Environment.GetCommandLineArgs())
+            {
+                if (line.StartsWith("rmmby://"))
+                {
+                    return;
+                }
+            }
+
             m_window = new MainWindow();
             m_window.Activate();
         }

@@ -60,6 +60,8 @@ namespace RMMBY_Installer_RM
             ModList.SelectedItem = ModList.MenuItems[0];
             NavigationViewItem nvi2 = ModList.MenuItems[0] as NavigationViewItem;
             UpdateCategory(nvi2.Tag.ToString());
+
+            //BackgroundImage.ImageSource = "";
         }
 
         private void nav_iteminvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -71,25 +73,117 @@ namespace RMMBY_Installer_RM
         {
             //TestText.Text = tag;
 
+            string schema = "";
+            string category = "";
+
             for (int i = 0; i < GameData.currentGame.modTypes.Count; i++)
             {
                 if (GameData.currentGame.gameSchema + "-" + GameData.currentGame.modTypes[i] == tag)
                 {
-                   // TestText.Text += "\n" + GameData.currentGame.typeDirectories[i];
+                    // TestText.Text += "\n" + GameData.currentGame.typeDirectories[i];
+
+                    schema = GameData.currentGame.gameSchema;
+                    category = GameData.currentGame.modTypes[i];
+                    GameData.currentCategory = category;
                 }
             }
 
-            ModListView.ItemsSource = DisplayMod.GetGameMods("", "");
+            ModListView.ItemsSource = DisplayMod.GetGameMods(schema, category);
+
+            GetFromFile();
         }
 
         void Save(object sender, RoutedEventArgs e)
         {
+            string filePath = Path.Combine(GameData.currentGame.defaultLocation, GameData.currentCategory + ".rmmby");
 
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            IList<object> modsList = ModListView.SelectedItems;
+
+            List<int> enabledModID = new List<int>();
+
+            List<string> enabledMods = new List<string>();
+
+            for (int i = 0; i < modsList.Count; i++)
+            {
+                for (int j = 0; j < GameData.modCount; j++)
+                {
+                    if (modsList[i] == ModListView.Items[j])
+                    {
+                        enabledModID.Add(j);
+                    }
+                }
+            }
+
+            List<Metadata> catMods = new List<Metadata>();
+            for (int i = 0; i < GameData.currentGame.installedMods.Count; i++)
+            {
+                if (GameData.currentGame.installedMods[i].Type == GameData.currentCategory)
+                {
+                    catMods.Add(GameData.currentGame.installedMods[i]);
+                }
+            }
+
+            foreach (int modID in enabledModID)
+            {
+                enabledMods.Add(catMods[modID].Location);
+            }
+
+            File.Create(filePath).Close();
+
+            StreamWriter sw = new StreamWriter(filePath);
+
+            for (int i = 0; i < enabledMods.Count; i++)
+            {
+                sw.WriteLine(enabledMods[i]);
+            }
+            sw.Close();
         }
 
         void Reset(object sender, RoutedEventArgs e)
         {
+            GetFromFile();
+        }
 
+        private void GetFromFile()
+        {
+            ModListView.DeselectRange(new ItemIndexRange(0, Convert.ToUInt32(ModListView.Items.Count)));
+
+            if (!File.Exists(Path.Combine(GameData.currentGame.defaultLocation, GameData.currentCategory + ".rmmby"))) return;
+
+            List<Metadata> catMods = new List<Metadata>();
+            for (int i = 0; i < GameData.currentGame.installedMods.Count; i++)
+            {
+                if (GameData.currentGame.installedMods[i].Type == GameData.currentCategory)
+                {
+                    catMods.Add(GameData.currentGame.installedMods[i]);
+                }
+            }
+
+            List<string> enabledMods = new List<string>();
+
+            string line;
+            using (StreamReader r = new StreamReader(Path.Combine(GameData.currentGame.defaultLocation, GameData.currentCategory + ".rmmby")))
+            {
+                do
+                {
+                    line = r.ReadLine();
+                    enabledMods.Add(line);
+                } while (line != null);
+            }
+
+            for (int i = 0; i < catMods.Count; i++)
+            {
+                for (int j = 0; j < enabledMods.Count; j++)
+                {
+                    if (catMods[i].Location == enabledMods[j])
+                        ModListView.SelectRange(new ItemIndexRange(i, 1));
+                }
+            }
         }
     }
 }

@@ -84,7 +84,12 @@ namespace RMMBY_Installer_RM
 
                             game.modTypes = types;
 
-                            string baseLocation = GameInstallLocation(game.gameSchema);
+                            game.defaultLocation = GameInstallLocation(game.gameSchema);
+
+                            if (game.defaultLocation == "LOCATIONNOTFOUND")
+                            {
+                                continue;
+                            }
 
                             int id = gameID.GetValueOrDefault(game.gameName);
 
@@ -99,7 +104,7 @@ namespace RMMBY_Installer_RM
                                 {
                                     if (lineData[j].Contains(types[i]))
                                     {
-                                        installLocations.Add(Path.Combine(baseLocation, lineData[j + 1]));
+                                        installLocations.Add(Path.Combine(game.defaultLocation, lineData[j + 1]));
                                         gotDir = true;
                                         break;
                                     }
@@ -108,11 +113,31 @@ namespace RMMBY_Installer_RM
 
                                 if (!gotDir)
                                 {
-                                    installLocations.Add(Path.Combine(baseLocation, lineData[2]));
+                                    installLocations.Add(Path.Combine(game.defaultLocation, lineData[2]));
                                 }
                             }
 
                             game.typeDirectories = installLocations;
+
+                            game.installedMods = new List<Metadata>();
+
+                            List<string> usedDirs = new List<string>();
+
+                            for (int i = 0; i < game.typeDirectories.Count; i++)
+                            {
+                                bool skip = false;
+                                for(int j = 0; j < usedDirs.Count; j++)
+                                {
+                                    if (game.typeDirectories[i] == usedDirs[j])
+                                        skip = true;
+                                }
+
+                                if (!skip)
+                                {
+                                    game.installedMods.AddRange(GetMods(game.typeDirectories[i]));
+                                    usedDirs.Add(game.typeDirectories[i]);
+                                }
+                            }
 
                             // Add The Game To The List Of Games
                             games.Add(game);
@@ -156,12 +181,29 @@ namespace RMMBY_Installer_RM
             return result;
         }
 
+        public static List<Metadata> GetMods(string path)
+        {
+            List<Metadata> mods = new List<Metadata>();
+
+            string[] allDirs = Directory.GetFiles(path, "*.json", SearchOption.AllDirectories);
+
+            foreach (string dir in allDirs)
+            {
+                Metadata meta = Metadata.Load(dir);
+                mods.Add(meta);
+            }
+
+            return mods;
+        }
+
         public struct Game
         {
             public string gameName;
             public string gameSchema;
+            public string defaultLocation;
             public List<string> modTypes;
             public List<string> typeDirectories;
+            public List<Metadata> installedMods;
         }
 
         private static Dictionary<string, int> gameID = new Dictionary<string, int>();
