@@ -8,8 +8,10 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,6 +63,14 @@ namespace RMMBY_Installer_RM
                     NavigationViewItem nvi = new NavigationViewItem();
                     nvi.Tag = game.gameSchema;
                     nvi.Content = game.gameName;
+
+                    GameIconData gid = GameIconData.GetIconFromSchema(game.gameSchema);
+
+                    BitmapImage bi = new BitmapImage();
+                    Uri uri = new Uri(gid._aPreviewMedia._aImages[0]._sUrl);
+                    bi.UriSource = uri;
+
+                    nvi.Icon = new ImageIcon() { Source = bi };
 
                     GameList.MenuItems.Add(nvi);
                 }
