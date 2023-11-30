@@ -16,7 +16,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -30,7 +32,7 @@ namespace RMMBY_Installer_RM
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(string gameName)
         {
             this.InitializeComponent();
 
@@ -109,7 +111,14 @@ namespace RMMBY_Installer_RM
             OverlappedPresenter pres = appWindow.Presenter as OverlappedPresenter;
             pres.IsResizable = false;
 
-            Title = "RMMBY";
+            if (gameName != null)
+            {
+                StartGameConnection(gameName);
+                Title = "RMMBY - " + gameName;
+            } else
+            {
+                Title = "RMMBY";
+            }
         }
 
         // An Array Of All Supported Games
@@ -134,6 +143,56 @@ namespace RMMBY_Installer_RM
         private void LoadPage()
         {
             contentFrame.Navigate(typeof(BlankPage1));
+        }
+
+        // Networking
+        private void StartGameConnection(string gameName)
+        {
+            string testString = "";
+
+            foreach (GetGameList.Game game in games)
+            {
+                if (game.gameName == gameName)
+                {
+                    testString = game.gameSchema;
+                    GameData.currentGame = game;
+                }
+            }
+
+            GameData.exclusiveMode = true;
+            GameData.exclusiveSchema = testString;
+
+            GameList.OpenPaneLength = 0;
+
+            LoadPage();
+
+            try
+            {
+                GameData.clientSocket = new TcpClient("127.0.0.1", 1290);
+
+                byte[] data = Encoding.ASCII.GetBytes("Schema - " + testString);
+
+                GameData.stream = GameData.clientSocket.GetStream();
+                GameData.stream.Write(data, 0, data.Length);
+
+                data = new byte[1024];
+
+                string responseData = string.Empty;
+
+                Int32 bytes = GameData.stream.Read(data, 0, data.Length);
+                responseData = Encoding.ASCII.GetString(data, 0, bytes);
+                GameData.stream.Close();
+
+                GameData.clientSocket.Close();
+            }
+            catch (ArgumentNullException e)
+            {
+
+            }
+            catch (SocketException e)
+            {
+
+            }
         }
     }
 }

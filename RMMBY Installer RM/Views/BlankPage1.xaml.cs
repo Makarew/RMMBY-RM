@@ -13,8 +13,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Runtime.Intrinsics.Arm;
+using System.Text;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Gaming.Preview.GamesEnumeration;
@@ -142,6 +144,22 @@ namespace RMMBY_Installer_RM
                 sw.WriteLine(enabledMods[i]);
             }
             sw.Close();
+
+            if (!GameData.exclusiveMode) return;
+
+            GameData.clientSocket = new TcpClient("127.0.0.1", 1290);
+            GameData.stream = GameData.clientSocket.GetStream();
+
+            byte[] data = Encoding.ASCII.GetBytes("End Connection No Restart");
+            GameData.stream.Write(data, 0, data.Length);
+
+            GameData.stream.Close();
+            GameData.stream.Flush();
+
+            GameData.clientSocket.Close();
+            GameData.clientSocket.Dispose();
+
+            Application.Current.Exit();
         }
 
         void Reset(object sender, RoutedEventArgs e)

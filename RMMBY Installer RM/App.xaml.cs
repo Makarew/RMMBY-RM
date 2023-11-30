@@ -45,15 +45,22 @@ namespace RMMBY_Installer_RM
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            string gameName = null;
+
             foreach (string line in Environment.GetCommandLineArgs())
             {
                 if (line.StartsWith("rmmby://"))
                 {
-                    return;
+                    if (!line.Contains("GameMenu"))
+                        return;
+                    else
+                    {
+                        gameName = line.Replace("rmmby://GameMenu/", "");
+                    }
                 }
             }
 
-            m_window = new MainWindow();
+            m_window = new MainWindow(gameName);
             m_window.Activate();
         }
 
