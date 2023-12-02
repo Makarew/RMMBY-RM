@@ -8,12 +8,12 @@
 
   <Identity
     Name="e138fb3c-1f57-4100-b0ec-2347ad3c6b8e"
-    Publisher="CN=makar"
+    Publisher="CN=Makarew"
     Version="1.0.0.0" />
 
   <Properties>
     <DisplayName>RMMBY Installer RM</DisplayName>
-    <PublisherDisplayName>makar</PublisherDisplayName>
+    <PublisherDisplayName>Makarew</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

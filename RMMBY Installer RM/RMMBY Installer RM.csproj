@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
@@ -15,8 +15,11 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\disc.png" />
+    <None Remove="Assets\RMMBY Bee Transparent.png" />
     <None Remove="Assets\RMMBY-Bee.ico" />
     <None Remove="BlankPage1.xaml" />
+    <None Remove="InstallWindow.xaml" />
+    <None Remove="Views\DownloadWindow.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,12 +43,19 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <Page Update="BlankPage1.xaml">
+    <Page Update="InstallWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\" />
+    <Page Update="Views\DownloadWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="BlankPage1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!-- 
