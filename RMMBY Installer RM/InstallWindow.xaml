@@ -43,7 +43,7 @@
         <Frame Grid.Row="2" x:Name="Row2">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                 <Border BorderThickness="2" BorderBrush="#111111" Background="#111111" Width="608" Height="200" >
-                    <TextBlock x:Name="LargeText" Text="Game: Idol Showdown&#x0a;Category: Characters&#x0a;Mod Name: Example Mod&#x0a;Mod Author: Author Name" FontSize="14"/>
+                    <TextBlock x:Name="LargeText" Text="Game: Idol Showdown&#x0a;Category: Characters&#x0a;Mod Name: Example Mod&#x0a;Mod Author: Author Name" FontSize="14" TextWrapping="Wrap" />
                 </Border>
                 <Button Content="Stop Speen" Click="StopSpeen" Width="200" Margin="8,10,0,0" />
             </StackPanel>

@@ -43,6 +43,9 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RMMBYLib\RMMBYLib.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="InstallWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

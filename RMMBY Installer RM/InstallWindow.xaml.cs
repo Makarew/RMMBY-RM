@@ -17,6 +17,8 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using RMMBYLib;
+using System.Reflection;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -52,9 +54,23 @@ namespace RMMBY_Installer_RM
             //bee.RenderTransform = rt;
 
             bee.RenderTransformOrigin = new Point(0.5,0.5);
+
+            string[] paths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "OneClickInstallers"), "*.dll");
+            string path = paths[0];
+
+            var assembly = Assembly.LoadFrom(path);
+
+            var info = Utils.PullAttribute<RMMBYOneClickAttribute>(assembly);
+
+            LargeText.Text = "Loaded One Click Installer: " + info.Name + "\n" + LargeText.Text;
+
+            installer = (OneClick)assembly.CreateInstance(info.SystemType.FullName);
+            installer.UpdateLogText += () => GetInstallerLog();
+            installer.UpdateMainText += () => GetMainLog();
         }
 
         Storyboard storyboard = new Storyboard();
+        OneClick installer;
 
         private void Speen(object sender, RoutedEventArgs e)
         {
@@ -73,18 +89,26 @@ namespace RMMBY_Installer_RM
 
             storyboard.Begin();
 
-            MainText.Text = "Downloading";
-            LargeText.Text += "\nDownloading";
-
             InstallButton.Visibility = Visibility.Collapsed;
             TextBorder.Width = 608;
+
+            installer.StartUp();
         }
 
         private void StopSpeen(object sender, RoutedEventArgs e)
         {
             storyboard.Stop();
-            MainText.Text = "Installed";
-            LargeText.Text += "\nExtracting\nInstalled";
+
+            installer.OnEnd();
+        }
+
+        private void GetInstallerLog()
+        {
+            LargeText.Text += "\n" + installer.nextLogText;
+        }
+        private void GetMainLog()
+        {
+            MainText.Text = installer.nextMainText;
         }
     }
 }
