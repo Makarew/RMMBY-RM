@@ -56,7 +56,7 @@ namespace RMMBY_Installer_RM
                         m_window = new MainWindow(line.Replace("rmmby://GameMenu/", ""));
                     } else if (line.Contains("gamebanana"))
                     {
-                        m_window = new InstallWindow();
+                        m_window = new InstallWindow(line);
                     }
                     m_window.Activate();
                     return;

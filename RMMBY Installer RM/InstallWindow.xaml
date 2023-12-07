@@ -35,7 +35,7 @@
         <Frame Grid.Row="1" x:Name="Row1">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border x:Name="TextBorder" BorderThickness="2" BorderBrush="#111111" Background="#111111" Width="400" Height="30" Margin="0,10,0,10" >
-                    <TextBlock x:Name="MainText" Text="Install _____ By _____?" FontSize="18"/>
+                    <TextBlock x:Name="MainText" Text="Install {0} By {1}?" FontSize="18"/>
                 </Border>
                 <Button x:Name="InstallButton" Content="Install" Click="Speen" Width="200" Margin="8,10,0,10" />
             </StackPanel>

@@ -19,6 +19,9 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using RMMBYLib;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Net;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -30,9 +33,13 @@ namespace RMMBY_Installer_RM
     /// </summary>
     public sealed partial class InstallWindow : Window
     {
-        public InstallWindow()
+        public InstallWindow(string ocURL)
         {
             this.InitializeComponent();
+
+            url = ocURL;
+            gbInfo = GetSubmissionInfo();
+            installerName = GetInstallerName(gbInfo._aGame._sName);
 
             // Set Window
             IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
@@ -46,33 +53,41 @@ namespace RMMBY_Installer_RM
 
             Title = "RMMBY - OneClick Installer";
 
-            //RotateTransform rt = new RotateTransform()
-            //{
-            //    CenterX = bee.Width / 2,
-            //    CenterY = bee.Height / 2,
-            //};
-            //bee.RenderTransform = rt;
-
             bee.RenderTransformOrigin = new Point(0.5,0.5);
 
             string[] paths = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "OneClickInstallers"), "*.dll");
-            string path = paths[0];
 
-            var assembly = Assembly.LoadFrom(path);
+            var assembly = FindInstaller(paths);
 
             var info = Utils.PullAttribute<RMMBYOneClickAttribute>(assembly);
 
-            LargeText.Text = "Loaded One Click Installer: " + info.Name + "\n" + LargeText.Text;
+            MainText.Text = string.Format(MainText.Text, gbInfo._sName, gbInfo._aSubmitter._sName);
+
+            LargeText.Text = "Loaded One Click Installer: " + info.Name + 
+                string.Format("\nGame: {0}", gbInfo._aGame._sName) +
+                string.Format("\nCategory: {0}", gbInfo._aCategory._sName) +
+                string.Format("\nMod Name: {0}", gbInfo._sName) +
+                string.Format("\nSubmitter: {0}", gbInfo._aSubmitter._sName);
 
             installer = (OneClick)assembly.CreateInstance(info.SystemType.FullName);
             installer.UpdateLogText += () => GetInstallerLog();
             installer.UpdateMainText += () => GetMainLog();
+            installer.InstallerFinished += () => OnFinish();
         }
 
         Storyboard storyboard = new Storyboard();
         OneClick installer;
+        string url;
+        GBSubmissionInfo gbInfo;
+        string installerName;
 
-        private void Speen(object sender, RoutedEventArgs e)
+        private async void Speen(object sender, RoutedEventArgs e)
+        {
+            StartInstallVisuals();
+            installer.StartInstall().Start();
+        }
+
+        private async void StartInstallVisuals()
         {
             DoubleAnimation rotate = new DoubleAnimation()
             {
@@ -91,15 +106,15 @@ namespace RMMBY_Installer_RM
 
             InstallButton.Visibility = Visibility.Collapsed;
             TextBorder.Width = 608;
-
-            installer.StartUp();
         }
 
         private void StopSpeen(object sender, RoutedEventArgs e)
         {
+            OnFinish();
+        }
+        private void OnFinish()
+        {
             storyboard.Stop();
-
-            installer.OnEnd();
         }
 
         private void GetInstallerLog()
@@ -109,6 +124,68 @@ namespace RMMBY_Installer_RM
         private void GetMainLog()
         {
             MainText.Text = installer.nextMainText;
+        }
+
+        private Assembly FindInstaller(string[] paths)
+        {
+            Assembly assembly = null;
+
+            foreach (string path in paths)
+            {
+                Assembly assembly2 = Assembly.LoadFrom(path);
+                var info = Utils.PullAttribute<RMMBYOneClickAttribute>(assembly2);
+
+                if (info.Name == installerName)
+                {
+                    assembly = assembly2;
+                }
+            }
+
+            return assembly;
+        }
+
+        private GBSubmissionInfo GetSubmissionInfo()
+        {
+            string[] paths = GameBanana.GetPaths(url);
+            return GBSubmissionInfo.GetMetadata(paths[1], paths[2]);
+        }
+
+        private string GetInstallerName(string name)
+        {
+            var webRequest = (HttpWebRequest)HttpWebRequest.Create("https://raw.githubusercontent.com/Makarew/RMMBYInstallers/main/ocinstallers.txt");
+
+            var response = webRequest.GetResponse();
+            var content = response.GetResponseStream();
+
+            string inName = "";
+
+            using (var reader = new StreamReader(content))
+            {
+                string line;
+                int id = 0;
+                using (reader)
+                {
+                    do
+                    {
+                        line = reader.ReadLine();
+                        if (line != null)
+                        {
+                            string[] lineData = line.Split(';');
+                            
+                            if (lineData[0] == name)
+                            {
+                                inName = lineData[2];
+                                break;
+                            }
+
+                            id++;
+                        }
+                    }
+                    while (line != null);
+                }
+            }
+
+            return inName;
         }
     }
 }
