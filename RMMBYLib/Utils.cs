@@ -27,5 +27,10 @@ namespace RMMBYLib
 
             return null;
         }
+
+        public static string GetRMMBYDirectory()
+        {
+            return Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        }
     }
 }
